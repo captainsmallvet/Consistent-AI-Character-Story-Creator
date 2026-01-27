@@ -1,0 +1,5 @@
+{
+  "name": "Consistent AI Character Story Creator",
+  "description": "An AI-powered tool to generate consistent cartoon or any style characters using Gemini. It allows users to upload reference images and generate multiple consistent story images based on multiple prompts in one batch.",
+  "requestFramePermissions": []
+}
