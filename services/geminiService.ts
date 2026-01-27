@@ -39,7 +39,7 @@ export const processTextTask = async (
       prompt = `แปลข้อความต่อไปนี้เป็นภาษาอังกฤษที่เหมาะสมที่สุดสำหรับ AI Image Generator: "${text}"`;
       break;
     case 'caption':
-      systemInstruction = "คุณคือผู้เชี่ยวชาญด้านการเล่าเรื่องและเขียนแคปชั่นโซเชียลมีเดีย";
+      systemInstruction = "คุณคือผู้เชี่ยวชาญด้านการเล่าเรื่องและเขียนแคปชั่นโซเชีลลมีเดีย";
       prompt = `เขียนแคปชั่นสั้นๆ ที่น่าประทับใจสำหรับภาพที่มีคำบรรยายดังนี้: "${text}"`;
       break;
   }
@@ -70,6 +70,10 @@ export const generateStoryImage = async (
     
     const apiKey = getApiKey();
     const ai = new GoogleGenAI({ apiKey });
+
+    // ตรวจสอบว่าโมเดลเป็นตระกูลที่รองรับการสร้างภาพหรือไม่
+    const isNanoBanana = model.includes('gemini-2.5') || model.includes('gemini-3') || model.includes('flash') || model.includes('lite');
+    const isImagen = model.includes('imagen');
 
     const characterNames = characters.map(c => c.name).join(' and ');
     
@@ -106,7 +110,7 @@ ${prompt}
 `.trim();
 
     try {
-        if (model.includes('imagen')) {
+        if (isImagen) {
             const imagenPrompt = `
             Scene: ${prompt}. 
             Characters: ${characterNames}.
@@ -114,14 +118,20 @@ ${prompt}
             Aspect Ratio: ${aspectRatio}.
             `.trim();
 
+            const config: any = {
+                numberOfImages: 1,
+                outputMimeType: 'image/jpeg',
+            };
+            
+            // ใส่ Aspect Ratio เฉพาะเมื่อมีค่าและไม่เป็น Custom (หรือถ้าโมเดลรองรับ)
+            if (aspectRatio && aspectRatio !== 'Custom') {
+                config.aspectRatio = aspectRatio as any;
+            }
+
             const response = await ai.models.generateImages({
                 model,
                 prompt: imagenPrompt,
-                config: {
-                    numberOfImages: 1,
-                    aspectRatio: aspectRatio as any,
-                    outputMimeType: 'image/jpeg',
-                },
+                config,
             });
 
             if (response.generatedImages && response.generatedImages.length > 0) {
@@ -147,15 +157,21 @@ ${prompt}
                 }
             }
 
+            const config: any = {};
+            
+            // เฉพาะโมเดลตระกูล Nano Banana (Gemini 2.5/3 Image) เท่านั้นที่ใช้ imageConfig
+            // หากโมเดลอื่นถูกเลือกและไม่รองรับ ให้ข้าม imageConfig ไป
+            if (isNanoBanana) {
+                config.imageConfig = {
+                    ...(aspectRatio && aspectRatio !== 'Custom' ? { aspectRatio: aspectRatio as any } : {}),
+                    ...(model === 'gemini-3-pro-image-preview' ? { imageSize: '1K' } : {})
+                };
+            }
+
             const response = await ai.models.generateContent({
                 model,
                 contents: { parts },
-                config: {
-                    imageConfig: {
-                        aspectRatio: aspectRatio as any,
-                        ...(model === 'gemini-3-pro-image-preview' ? { imageSize: '1K' } : {})
-                    },
-                },
+                config,
             });
             
             const candidate = response.candidates?.[0];
@@ -168,7 +184,7 @@ ${prompt}
                 if (candidate?.finishReason && candidate.finishReason !== 'STOP') {
                      throw new Error(`การสร้างภาพหยุดลงด้วยสาเหตุ: ${candidate.finishReason}`);
                 }
-                throw new Error("ไม่พบข้อมูลรูปภาพในการตอบกลับจาก API");
+                throw new Error("ไม่พบข้อมูลรูปภาพในการตอบกลับจาก API (โมเดลที่เลือกอาจไม่รองรับการสร้างภาพโดยตรง)");
             }
         }
 
