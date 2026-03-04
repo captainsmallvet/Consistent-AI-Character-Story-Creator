@@ -145,10 +145,14 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, isLoadin
             onChange={(e) => setTextModel(e.target.value)}
             className="w-full p-2 text-xs bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="gemini-3-flash-preview">Gemini 3 Flash (Recommended)</option>
-            <option value="gemini-3-pro-preview">Gemini 3 Pro (Complex Reasoning)</option>
-            <option value="gemini-flash-latest">Gemini Flash Latest</option>
-            <option value="gemini-flash-lite-latest">Gemini Flash Lite</option>
+<option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+<option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
+<option value="gemini-3-pro-preview">Gemini 3.0 Pro Preview</option>
+<option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite Preview</option>
+<option value="gemini-flash-latest">Gemini Flash Latest</option>
+<option value="gemini-flash-lite-latest">Gemini Flash Lite Latest</option>
+<option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+<option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
           </select>
         </div>
 
@@ -160,12 +164,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, isLoadin
             onChange={(e) => setSelectedModel(e.target.value)}
             className="w-full p-2 text-xs bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <option value="gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
-            <option value="gemini-3-pro-image-preview">Gemini 3 Pro Image</option>
-            <option value="gemini-flash-latest">Gemini Flash Latest</option>
-            <option value="gemini-flash-lite-latest">Gemini Flash Lite</option>
-            <option value="imagen-3.0-generate-001">Imagen 3.0</option>
-            <option value="imagen-4.0-generate-001">Imagen 4.0 Latest</option>
+<option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Image (High Quality)</option>
+<option value="gemini-3-pro-image-preview">Gemini 3.0 Pro Image (Premium)</option>
+<option value="gemini-2.5-flash-image">Gemini 2.5 Flash Image (Standard)</option>
+<option value="imagen-4.0-generate-001">Imagen 4.0</option>
+<option value="gemini-flash-image-latest">Gemini Flash Image Latest</option>
+<option value="gemini-pro-image-latest">Gemini Pro Image Latest</option>
           </select>
         </div>
       </div>
